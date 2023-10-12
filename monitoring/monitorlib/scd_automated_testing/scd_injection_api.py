@@ -66,6 +66,7 @@ class FlightAuthorisationData(ImplicitDict):
 
 ### End of definitions around flight authorisation data
 
+
 class InjectFlightRequest(ImplicitDict):
     """A class to hold the details of a test injection payload"""
 

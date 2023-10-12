@@ -54,12 +54,12 @@ from monitoring.uss_qualifier.resources.interuss.mock_uss import (
 from implicitdict import StringBasedDateTime
 from datetime import datetime
 
+
 class ScdGetOpResponseDataValidationBySUT(TestScenario):
     flight_1_id: Optional[str] = None
     flight_1_planned_time_range_A: FlightIntent
     flight_1_activated_time_range_A: FlightIntent
     flight_1_planned_time_range_B: FlightIntent
-
 
     flight_2_id: Optional[str] = None
     flight_2_planned_time_range_A: FlightIntent
@@ -171,11 +171,15 @@ class ScdGetOpResponseDataValidationBySUT(TestScenario):
             return
         self.end_test_case()
 
-        self.begin_test_case("Attempt to plan no conflict flight - near existing flight")
+        self.begin_test_case(
+            "Attempt to plan no conflict flight - near existing flight"
+        )
         self._sut_plans_deconflicted_flight_near_existing_flight()
         self.end_test_case()
 
-        self.begin_test_case("Attempt to plan deconflicted flight - near a flight sharing invalid data")
+        self.begin_test_case(
+            "Attempt to plan deconflicted flight - near a flight sharing invalid data"
+        )
         self._sut_plans_deconflicted_flight_near_invalid_shared_existing_flight()
         self.end_test_case()
 
@@ -203,7 +207,7 @@ class ScdGetOpResponseDataValidationBySUT(TestScenario):
                 self.flight_1_planned_time_range_B,
                 self.flight_2_planned_time_range_A,
                 self.flight_2_activated_time_range_A,
-                self.flight_2_equal_prio_planned_time_range_B
+                self.flight_2_equal_prio_planned_time_range_B,
             ],
             [self.sut, self.control_uss],
         )
@@ -233,10 +237,10 @@ class ScdGetOpResponseDataValidationBySUT(TestScenario):
         st = StringBasedDateTime(datetime.utcnow())
 
         resp_flight_1, self.flight_1_id = plan_flight_intent(
-                self,
-                "SUT plans flight 1",
-                self.sut,
-                self.flight_1_planned_time_range_B.request,
+            self,
+            "SUT plans flight 1",
+            self.sut,
+            self.flight_1_planned_time_range_B.request,
         )
         validate_shared_operational_intent(
             self,
@@ -247,7 +251,9 @@ class ScdGetOpResponseDataValidationBySUT(TestScenario):
             resp_flight_1.operational_intent_id,
         )
 
-        control_uss_domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.control_uss.config.injection_base_url))
+        control_uss_domain = "{0.scheme}://{0.netloc}/".format(
+            urlsplit(self.control_uss.config.injection_base_url)
+        )
         validate_get_interactions(
             self,
             self.mock_uss,
@@ -265,17 +271,17 @@ class ScdGetOpResponseDataValidationBySUT(TestScenario):
         )
 
         delete_flight_intent(self, "Delete sut flight", self.sut, self.flight_1_id)
-        delete_flight_intent(self, "Delete control flight", self.control_uss, self.flight_2_id)
+        delete_flight_intent(
+            self, "Delete control flight", self.control_uss, self.flight_2_id
+        )
 
     def _sut_plans_deconflicted_flight_near_invalid_shared_existing_flight(self):
         req = self.flight_2_planned_time_range_A.request
         mod = MockUssFlightBehavior(
-            modify_sharing_methods=["GET","POST"],
+            modify_sharing_methods=["GET", "POST"],
             modify_fields={
-                "operational_intent_reference":
-                    {"state": "Flying"},
-                "operational_intent_details":
-                    {"prioirity": -1}
+                "operational_intent_reference": {"state": "Flying"},
+                "operational_intent_details": {"prioirity": -1},
             },
         )
         mod_req = MockUssInjectFlightRequest(
@@ -308,15 +314,17 @@ class ScdGetOpResponseDataValidationBySUT(TestScenario):
             self.flight_1_planned_time_range_B.request,
         ):
             resp_flight_1, self.flight_1_id = plan_flight_intent_expect_failed(
-                    self,
-                    "SUT attempts to plan flight 1, expect failure",
-                    self.sut,
-                    self.flight_1_planned_time_range_B.request,
+                self,
+                "SUT attempts to plan flight 1, expect failure",
+                self.sut,
+                self.flight_1_planned_time_range_B.request,
             )
 
             logger.debug(f"Response on submission to SUT: {resp_flight_1}")
 
-        control_uss_domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.control_uss.config.injection_base_url))
+        control_uss_domain = "{0.scheme}://{0.netloc}/".format(
+            urlsplit(self.control_uss.config.injection_base_url)
+        )
         validate_get_interactions(
             self,
             self.mock_uss,
@@ -333,7 +341,9 @@ class ScdGetOpResponseDataValidationBySUT(TestScenario):
             "Validate flight2 Notification not sent",
         )
 
-        delete_flight_intent(self, "Delete Control USS flight", self.control_uss, self.flight_2_id)
+        delete_flight_intent(
+            self, "Delete Control USS flight", self.control_uss, self.flight_2_id
+        )
 
     def cleanup(self):
         self.begin_cleanup()

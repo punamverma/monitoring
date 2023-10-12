@@ -414,7 +414,7 @@ def submit_flight_intent(
             time.sleep(5)
             scenario.record_interuss_interactions(
                 mock_uss.get_interactions(scenario._step_report.start_time),
-                exclude_sub=flight_planner.client.auth_adapter.get_sub()
+                exclude_sub=flight_planner.client.auth_adapter.get_sub(),
             )
         if resp.result in expected_results:
             scenario.end_test_step()

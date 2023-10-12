@@ -21,6 +21,7 @@ from monitoring.uss_qualifier.requirements.definitions import RequirementID
 
 from monitoring.mock_uss.interaction_logging.interactions import Interaction
 
+
 class FailedCheck(ImplicitDict):
     name: str
     """Name of the check that failed"""

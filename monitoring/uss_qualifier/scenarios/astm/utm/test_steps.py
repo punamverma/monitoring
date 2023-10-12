@@ -24,6 +24,7 @@ from monitoring.uss_qualifier.resources.interuss.mock_uss import MockUSSClient
 from implicitdict import StringBasedDateTime
 from loguru import logger
 
+
 class ValidateNotSharedOperationalIntent(object):
     """Validate that an operational intent information was not shared with the DSS by comparing the operational intents
     found in the area of the flight intent before and after the planning attempt.
@@ -239,23 +240,22 @@ def validate_shared_operational_intent(
 
 
 def validate_post_interactions(
-            scenario: TestScenarioType,
-            mock_uss: MockUSSClient,
-            st: StringBasedDateTime,
-            posted_to_url: str,
-            test_step: str,
-        ):
+    scenario: TestScenarioType,
+    mock_uss: MockUSSClient,
+    st: StringBasedDateTime,
+    posted_to_url: str,
+    test_step: str,
+):
     if mock_uss is not None:
         scenario.begin_test_step(test_step)
         time.sleep(5)
         interactions = mock_uss.get_interactions(st)
         scenario.record_interuss_interactions(
-            interactions,
-            exclude_sub=mock_uss.session.auth_adapter.get_sub()
+            interactions, exclude_sub=mock_uss.session.auth_adapter.get_sub()
         )
 
         logger.debug(f"Checking for Post to {posted_to_url}")
-        with scenario.check("Notification" ) as check:
+        with scenario.check("Notification") as check:
             found = False
             for interaction in interactions:
                 method = interaction.query.request.method
@@ -267,30 +267,30 @@ def validate_post_interactions(
                     summary=f"Notification to {posted_to_url} not received",
                     severity=Severity.Medium,
                     details=f"Notification to {posted_to_url} not received",
-                    requirements="SCDxxxx"
+                    requirements="SCDxxxx",
                 )
         scenario.end_test_step()
 
     return True
 
+
 def validate_no_post_interactions(
-            scenario: TestScenarioType,
-            mock_uss: MockUSSClient,
-            st: StringBasedDateTime,
-            posted_to_url: str,
-            test_step: str,
-        ):
+    scenario: TestScenarioType,
+    mock_uss: MockUSSClient,
+    st: StringBasedDateTime,
+    posted_to_url: str,
+    test_step: str,
+):
     if mock_uss is not None:
         scenario.begin_test_step(test_step)
         time.sleep(5)
         interactions = mock_uss.get_interactions(st)
         scenario.record_interuss_interactions(
-            interactions,
-            exclude_sub=mock_uss.session.auth_adapter.get_sub()
+            interactions, exclude_sub=mock_uss.session.auth_adapter.get_sub()
         )
 
         logger.debug(f"Checking for Post to {posted_to_url}")
-        with scenario.check("Notification should not be sent" ) as check:
+        with scenario.check("Notification should not be sent") as check:
             found = False
             for interaction in interactions:
                 method = interaction.query.request.method
@@ -302,31 +302,31 @@ def validate_no_post_interactions(
                     summary=f"Notification to {posted_to_url} wrongly sent",
                     severity=Severity.Medium,
                     details=f"Notification to {posted_to_url} wrongly sent",
-                    requirements="SCDxxxx"
+                    requirements="SCDxxxx",
                 )
         scenario.end_test_step()
 
     return True
 
+
 def validate_get_interactions(
-            scenario: TestScenarioType,
-            mock_uss: MockUSSClient,
-            st: StringBasedDateTime,
-            get_from_url: str,
-            id: str,
-            test_step: str,
-        ):
+    scenario: TestScenarioType,
+    mock_uss: MockUSSClient,
+    st: StringBasedDateTime,
+    get_from_url: str,
+    id: str,
+    test_step: str,
+):
     if mock_uss is not None:
         scenario.begin_test_step(test_step)
         time.sleep(5)
         interactions = mock_uss.get_interactions(st)
         scenario.record_interuss_interactions(
-            interactions,
-            exclude_sub=mock_uss.session.auth_adapter.get_sub()
+            interactions, exclude_sub=mock_uss.session.auth_adapter.get_sub()
         )
 
         logger.debug(f"Checking for Get to {get_from_url} for id {id}")
-        with scenario.check("GET" ) as check:
+        with scenario.check("GET") as check:
             found = False
             for interaction in interactions:
                 method = interaction.query.request.method
@@ -338,9 +338,8 @@ def validate_get_interactions(
                     summary=f"No GET request to {get_from_url} for {id} received",
                     severity=Severity.Medium,
                     details=f"No GET request to {get_from_url} for {id} received",
-                    requirements="SCDxxxx"
+                    requirements="SCDxxxx",
                 )
 
         scenario.end_test_step()
     return True
-

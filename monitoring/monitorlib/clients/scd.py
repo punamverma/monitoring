@@ -176,7 +176,8 @@ def get_operational_intent_details(
     )
     if errors:
         raise QueryError(
-            msg=f"{subject} response failed schema validation as per UTM Spec API", queries=[query]
+            msg=f"{subject} response failed schema validation as per UTM Spec API",
+            queries=[query],
         )
     return resp_body.operational_intent, query
 

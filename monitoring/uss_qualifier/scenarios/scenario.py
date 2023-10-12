@@ -337,12 +337,16 @@ class GenericTestScenario(ABC):
             f"Queried {query.request['method']} {query.request['url']} -> {query.response.status_code}"
         )
 
-    def record_interuss_interactions(self, interactions: List[Interaction], exclude_sub: str) -> None:
+    def record_interuss_interactions(
+        self, interactions: List[Interaction], exclude_sub: str
+    ) -> None:
         def is_uss_interaction(interaction: Interaction) -> bool:
             headers = interaction.query.request.headers
             if "Authorization" in headers:
                 token = headers.get("Authorization").split(" ")[1]
-                payload = jwt.decode(token, algorithms="RS256", options={"verify_signature": False})
+                payload = jwt.decode(
+                    token, algorithms="RS256", options={"verify_signature": False}
+                )
                 sub = payload["sub"]
                 logger.debug(f"sub of interuss_interaction token: {sub}")
                 if sub == exclude_sub:
@@ -351,7 +355,9 @@ class GenericTestScenario(ABC):
                 else:
                     return True
             else:
-                logger.error(f"Interaction received with out Authorization : {interaction}")
+                logger.error(
+                    f"Interaction received with out Authorization : {interaction}"
+                )
                 return False
 
         self._expect_phase({ScenarioPhase.RunningTestStep, ScenarioPhase.CleaningUp})

@@ -44,10 +44,11 @@ def plan_flight_intent_expect_failed(
         test_step,
         "Plan should fail",
         {InjectFlightResult.Failed},
-        {InjectFlightResult.Planned: "Failure If Planned",
-         InjectFlightResult.ConflictWithFlight: "Failure If Conflict",
-         InjectFlightResult.Rejected: "Failure If Rejected"
-         },
+        {
+            InjectFlightResult.Planned: "Failure If Planned",
+            InjectFlightResult.ConflictWithFlight: "Failure If Conflict",
+            InjectFlightResult.Rejected: "Failure If Rejected",
+        },
         flight_planner,
         flight_intent,
         mock_uss=mock_uss,
@@ -126,7 +127,8 @@ def validate_sharing_operational_intent_with_invalid_interuss_data(
             )
 
     with scenario.check(
-        "Operational intent details invalid data format", [flight_planner.participant_id]
+        "Operational intent details invalid data format",
+        [flight_planner.participant_id],
     ) as check:
         errors = schema_validation.validate(
             schema_validation.F3548_21.OpenAPIPath,

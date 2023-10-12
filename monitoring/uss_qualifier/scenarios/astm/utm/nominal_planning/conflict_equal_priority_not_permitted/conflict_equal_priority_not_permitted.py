@@ -51,6 +51,7 @@ from monitoring.uss_qualifier.resources.interuss.mock_uss import (
 from implicitdict import StringBasedDateTime
 from datetime import datetime
 
+
 class ConflictEqualPriorityNotPermitted(TestScenario):
     flight_1_id: Optional[str] = None
     flight_1_planned_time_range_A: FlightIntent

@@ -151,31 +151,57 @@ def scdsc_inject_flight(flight_id: str) -> Tuple[str, int]:
         json = flask.request.json
         if json is None:
             raise ValueError("Request did not contain a JSON payload")
-        req_body: MockUssInjectFlightRequest = ImplicitDict.parse(json, MockUssInjectFlightRequest)
+        req_body: MockUssInjectFlightRequest = ImplicitDict.parse(
+            json, MockUssInjectFlightRequest
+        )
     except ValueError as e:
         msg = "Create flight {} unable to parse JSON: {}".format(flight_id, e)
         return msg, 400
     json, code = inject_flight(flight_id, req_body)
     return flask.jsonify(json), code
 
+
 def get_op_to_share(
     operational_intent_reference: OperationalIntentReference,
     req_body: MockUssInjectFlightRequest,
-    method: str) -> OperationalIntent:
+    method: str,
+) -> OperationalIntent:
     ref = operational_intent_reference
-    details = OperationalIntentDetails(volumes=req_body.operational_intent.volumes,
-                                       off_nominal_volumes=req_body.operational_intent.off_nominal_volumes,
-                                       priority=req_body.operational_intent.priority)
-    if "mock_uss_flight_behavior" in req_body and "modify_sharing_methods" in req_body["mock_uss_flight_behavior"]:
+    details = OperationalIntentDetails(
+        volumes=req_body.operational_intent.volumes,
+        off_nominal_volumes=req_body.operational_intent.off_nominal_volumes,
+        priority=req_body.operational_intent.priority,
+    )
+    if (
+        "mock_uss_flight_behavior" in req_body
+        and "modify_sharing_methods" in req_body["mock_uss_flight_behavior"]
+    ):
         if method not in req_body["mock_uss_flight_behavior"]["modify_sharing_methods"]:
             return OperationalIntent(reference=ref, details=details)
-    if "mock_uss_flight_behavior" in req_body and "modify_fields" in req_body["mock_uss_flight_behavior"]:
-        if "operational_intent_reference" in req_body["mock_uss_flight_behavior"]["modify_fields"]:
-            ref = apply_overrides(operational_intent_reference,
-                                       req_body["mock_uss_flight_behavior"]["modify_fields"]["operational_intent_reference"])
-        if "operational_intent_details" in req_body["mock_uss_flight_behavior"]["modify_fields"]:
-            details = apply_overrides(details,
-                                   req_body["mock_uss_flight_behavior"]["modify_fields"]["operational_intent_details"])
+    if (
+        "mock_uss_flight_behavior" in req_body
+        and "modify_fields" in req_body["mock_uss_flight_behavior"]
+    ):
+        if (
+            "operational_intent_reference"
+            in req_body["mock_uss_flight_behavior"]["modify_fields"]
+        ):
+            ref = apply_overrides(
+                operational_intent_reference,
+                req_body["mock_uss_flight_behavior"]["modify_fields"][
+                    "operational_intent_reference"
+                ],
+            )
+        if (
+            "operational_intent_details"
+            in req_body["mock_uss_flight_behavior"]["modify_fields"]
+        ):
+            details = apply_overrides(
+                details,
+                req_body["mock_uss_flight_behavior"]["modify_fields"][
+                    "operational_intent_details"
+                ],
+            )
 
     op_intent = OperationalIntent(reference=ref, details=details)
     return op_intent
@@ -183,7 +209,10 @@ def get_op_to_share(
 
 def inject_flight(flight_id: str, req_body: InjectFlightRequest) -> Tuple[dict, int]:
     logger.debug(f"Received flight_id to inject - {flight_id} - {req_body}")
-    if("mock_uss_flight_behavior" in req_body and req_body["mock_uss_flight_behavior"] is not None):
+    if (
+        "mock_uss_flight_behavior" in req_body
+        and req_body["mock_uss_flight_behavior"] is not None
+    ):
         pass
 
     pid = os.getpid()
@@ -407,7 +436,9 @@ def inject_flight(flight_id: str, req_body: InjectFlightRequest) -> Tuple[dict, 
         subscriber_list = ", ".join(s.uss_base_url for s in result.subscribers)
         step_name = f"notifying subscribers {{{subscriber_list}}}"
 
-        operational_intent = get_op_to_share(result.operational_intent_reference, req_body, "POST")
+        operational_intent = get_op_to_share(
+            result.operational_intent_reference, req_body, "POST"
+        )
 
         for subscriber in result.subscribers:
             if subscriber.uss_base_url == base_url:
@@ -431,7 +462,9 @@ def inject_flight(flight_id: str, req_body: InjectFlightRequest) -> Tuple[dict, 
         step_name = "storing flight in database"
         logger.debug(f"[inject_flight/{pid}:{flight_id}] Storing flight in database")
 
-        operational_intent = get_op_to_share(result.operational_intent_reference, req_body, "GET")
+        operational_intent = get_op_to_share(
+            result.operational_intent_reference, req_body, "GET"
+        )
 
         record = database.FlightRecord(
             op_intent_reference=result.operational_intent_reference,

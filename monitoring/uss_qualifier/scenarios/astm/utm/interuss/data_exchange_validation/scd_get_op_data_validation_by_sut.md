@@ -62,7 +62,7 @@ Validate Flight 1 is planned.
 Flight1 when being planned, SUT needs to GET information of flight 2
 
 ### [Validate flight2 Notification test step](test_steps/validate_notification_operational_intent.md)
-Flight 2 not notified. As per **[astm.f3548.v21.USS0105 and SCD0085](../../../../../requirements/astm/f3548/v21.md)**
+Flight 2 not notified. As per **[astm.f3548.v21.USS0105](../../../../../requirements/astm/f3548/v21.md)** and **[astm.f3548.v21.SCD0085](../../../../../requirements/astm/f3548/v21.md)**
 
 ### [Delete sut flight test step](../../../../flight_planning/delete_flight_intent.md)
 Delete sut flight
