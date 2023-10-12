@@ -59,6 +59,7 @@ actions:
       priority_planning_selector: priority_planning_selector?
       priority_preemption_flights: priority_preemption_flights
       dss: dss
+      mock_uss: mock_uss
     specification:
       action_to_repeat:
         test_scenario:
@@ -68,6 +69,7 @@ actions:
             tested_uss: uss1
             control_uss: uss2
             dss: dss
+            mock_uss: mock_uss
         on_failure: Continue
       combination_selector_source: priority_planning_selector
       flight_planners_source: flight_planners

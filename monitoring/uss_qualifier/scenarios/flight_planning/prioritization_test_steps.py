@@ -15,6 +15,7 @@ from monitoring.uss_qualifier.scenarios.flight_planning.test_steps import (
     expect_flight_intent_state,
 )
 from monitoring.uss_qualifier.scenarios.scenario import TestScenarioType
+from monitoring.uss_qualifier.resources.interuss.mock_uss import MockUSSClient
 
 
 def plan_priority_conflict_flight_intent(
@@ -22,6 +23,7 @@ def plan_priority_conflict_flight_intent(
     test_step: str,
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Attempt to plan a flight intent that should result in a conflict with a higher priority flight intent.
 
@@ -42,6 +44,7 @@ def plan_priority_conflict_flight_intent(
         {InjectFlightResult.Failed: "Failure"},
         flight_planner,
         flight_intent,
+        mock_uss=mock_uss,
     )[0]
 
 
@@ -51,6 +54,7 @@ def modify_planned_priority_conflict_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: str,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Attempt to modify a planned flight intent that should result in a conflict with a higher priority flight intent.
 
@@ -72,6 +76,7 @@ def modify_planned_priority_conflict_flight_intent(
         flight_planner,
         flight_intent,
         flight_id,
+        mock_uss,
     )[0]
 
 
@@ -81,6 +86,7 @@ def activate_priority_conflict_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: Optional[str] = None,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Attempt to activate a flight intent that should result in a conflict with a higher priority flight intent.
 
@@ -102,6 +108,7 @@ def activate_priority_conflict_flight_intent(
         flight_planner,
         flight_intent,
         flight_id,
+        mock_uss,
     )[0]
 
 
@@ -111,6 +118,7 @@ def modify_activated_priority_conflict_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: str,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Attempt to modify an activated flight intent that should result in a conflict with a higher priority flight intent.
 
@@ -132,6 +140,7 @@ def modify_activated_priority_conflict_flight_intent(
         flight_planner,
         flight_intent,
         flight_id,
+        mock_uss,
     )[0]
 
 
@@ -140,6 +149,7 @@ def plan_conflict_flight_intent(
     test_step: str,
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Attempt to plan a flight intent that should result in a non-permitted conflict with an equal priority flight intent.
 
@@ -160,6 +170,7 @@ def plan_conflict_flight_intent(
         {InjectFlightResult.Failed: "Failure"},
         flight_planner,
         flight_intent,
+        mock_uss=mock_uss,
     )[0]
 
 
@@ -169,6 +180,7 @@ def modify_planned_conflict_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: str,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Attempt to modify a planned flight intent that should result in a non-permitted conflict with an equal priority flight intent.
 
@@ -190,6 +202,7 @@ def modify_planned_conflict_flight_intent(
         flight_planner,
         flight_intent,
         flight_id,
+        mock_uss,
     )[0]
 
 
@@ -199,6 +212,7 @@ def activate_conflict_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: Optional[str] = None,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Attempt to activate a flight intent that should result in a non-permitted conflict with an equal priority flight intent.
 
@@ -220,6 +234,7 @@ def activate_conflict_flight_intent(
         flight_planner,
         flight_intent,
         flight_id,
+        mock_uss,
     )[0]
 
 
@@ -229,6 +244,7 @@ def modify_activated_conflict_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: str,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Attempt to modify an activated flight intent that should result in a non-permitted conflict with an equal priority flight intent.
 
@@ -250,6 +266,7 @@ def modify_activated_conflict_flight_intent(
         flight_planner,
         flight_intent,
         flight_id,
+        mock_uss,
     )[0]
 
 
@@ -258,6 +275,7 @@ def plan_permitted_conflict_flight_intent(
     test_step: str,
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> Tuple[InjectFlightResponse, Optional[str]]:
     """Plan a flight intent that has a permitted equal priority conflict with another flight intent, that should result in success.
 
@@ -280,6 +298,7 @@ def plan_permitted_conflict_flight_intent(
         {InjectFlightResult.Failed: "Failure"},
         flight_planner,
         flight_intent,
+        mock_uss=mock_uss,
     )
 
 
@@ -289,6 +308,7 @@ def modify_planned_permitted_conflict_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: str,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Modify a planned flight intent that has a permitted equal priority conflict with another flight intent, that should result in success.
 
@@ -310,6 +330,7 @@ def modify_planned_permitted_conflict_flight_intent(
         flight_planner,
         flight_intent,
         flight_id,
+        mock_uss,
     )[0]
 
 
@@ -319,6 +340,7 @@ def activate_permitted_conflict_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: Optional[str] = None,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Activate a flight intent that has a permitted equal priority conflict with another flight intent, that should result in success.
 
@@ -340,6 +362,7 @@ def activate_permitted_conflict_flight_intent(
         flight_planner,
         flight_intent,
         flight_id,
+        mock_uss,
     )[0]
 
 
@@ -349,6 +372,7 @@ def modify_activated_permitted_conflict_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: str,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Modify an activated flight intent that has a permitted equal priority conflict with another flight intent, that should result in success.
 
@@ -370,4 +394,5 @@ def modify_activated_permitted_conflict_flight_intent(
         flight_planner,
         flight_intent,
         flight_id,
+        mock_uss,
     )[0]

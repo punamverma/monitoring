@@ -1,5 +1,5 @@
 from typing import List
-
+import time
 from monitoring.monitorlib import schema_validation, fetch
 from uas_standards.astm.f3548.v21.api import OperationalIntentState
 
@@ -20,7 +20,9 @@ from monitoring.uss_qualifier.scenarios.astm.utm.evaluation import (
     validate_op_intent_details,
 )
 from monitoring.uss_qualifier.scenarios.scenario import TestScenarioType
-
+from monitoring.uss_qualifier.resources.interuss.mock_uss import MockUSSClient
+from implicitdict import StringBasedDateTime
+from loguru import logger
 
 class ValidateNotSharedOperationalIntent(object):
     """Validate that an operational intent information was not shared with the DSS by comparing the operational intents
@@ -234,3 +236,111 @@ def validate_shared_operational_intent(
 
     scenario.end_test_step()
     return True
+
+
+def validate_post_interactions(
+            scenario: TestScenarioType,
+            mock_uss: MockUSSClient,
+            st: StringBasedDateTime,
+            posted_to_url: str,
+            test_step: str,
+        ):
+    if mock_uss is not None:
+        scenario.begin_test_step(test_step)
+        time.sleep(5)
+        interactions = mock_uss.get_interactions(st)
+        scenario.record_interuss_interactions(
+            interactions,
+            exclude_sub=mock_uss.session.auth_adapter.get_sub()
+        )
+
+        logger.debug(f"Checking for Post to {posted_to_url}")
+        with scenario.check("Notification" ) as check:
+            found = False
+            for interaction in interactions:
+                method = interaction.query.request.method
+                url = interaction.query.request.url
+                if method == "POST" and posted_to_url in url:
+                    found = True
+            if found == False:
+                check.record_failed(
+                    summary=f"Notification to {posted_to_url} not received",
+                    severity=Severity.Medium,
+                    details=f"Notification to {posted_to_url} not received",
+                    requirements="SCDxxxx"
+                )
+        scenario.end_test_step()
+
+    return True
+
+def validate_no_post_interactions(
+            scenario: TestScenarioType,
+            mock_uss: MockUSSClient,
+            st: StringBasedDateTime,
+            posted_to_url: str,
+            test_step: str,
+        ):
+    if mock_uss is not None:
+        scenario.begin_test_step(test_step)
+        time.sleep(5)
+        interactions = mock_uss.get_interactions(st)
+        scenario.record_interuss_interactions(
+            interactions,
+            exclude_sub=mock_uss.session.auth_adapter.get_sub()
+        )
+
+        logger.debug(f"Checking for Post to {posted_to_url}")
+        with scenario.check("Notification should not be sent" ) as check:
+            found = False
+            for interaction in interactions:
+                method = interaction.query.request.method
+                url = interaction.query.request.url
+                if method == "POST" and posted_to_url in url:
+                    found = True
+            if found == True:
+                check.record_failed(
+                    summary=f"Notification to {posted_to_url} wrongly sent",
+                    severity=Severity.Medium,
+                    details=f"Notification to {posted_to_url} wrongly sent",
+                    requirements="SCDxxxx"
+                )
+        scenario.end_test_step()
+
+    return True
+
+def validate_get_interactions(
+            scenario: TestScenarioType,
+            mock_uss: MockUSSClient,
+            st: StringBasedDateTime,
+            get_from_url: str,
+            id: str,
+            test_step: str,
+        ):
+    if mock_uss is not None:
+        scenario.begin_test_step(test_step)
+        time.sleep(5)
+        interactions = mock_uss.get_interactions(st)
+        scenario.record_interuss_interactions(
+            interactions,
+            exclude_sub=mock_uss.session.auth_adapter.get_sub()
+        )
+
+        logger.debug(f"Checking for Get to {get_from_url} for id {id}")
+        with scenario.check("GET" ) as check:
+            found = False
+            for interaction in interactions:
+                method = interaction.query.request.method
+                url = interaction.query.request.url
+                if method == "GET" and get_from_url in url and id in url:
+                    found = True
+            if found == False:
+                check.record_failed(
+                    summary=f"No GET request to {get_from_url} for {id} received",
+                    severity=Severity.Medium,
+                    details=f"No GET request to {get_from_url} for {id} received",
+                    requirements="SCDxxxx"
+                )
+
+        scenario.end_test_step()
+    return True
+

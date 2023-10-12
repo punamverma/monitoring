@@ -13,7 +13,8 @@ services:
     image: interuss/monitoring
     command: mock_uss/start.sh
     environment:
-      - MOCK_USS_AUTH_SPEC=DummyOAuth(http://oauth.authority.localutm:8085/token,uss1)
+      - MOCK_USS_SAN=uss1
+      - MOCK_USS_AUTH_SPEC=DummyOAuth(http://oauth.authority.localutm:8085/token,${MOCK_USS_SAN})
       - MOCK_USS_DSS_URL=http://dss.uss1.localutm
       - MOCK_USS_PUBLIC_KEY=/var/test-certs/auth2.pem
       - MOCK_USS_TOKEN_AUDIENCE=scdsc.uss1.localutm,localhost,host.docker.internal
@@ -222,7 +223,8 @@ services:
     image: interuss/monitoring
     command: mock_uss/start.sh
     environment:
-      - MOCK_USS_AUTH_SPEC=DummyOAuth(http://oauth.authority.localutm:8085/token,uss6)
+      - MOCK_USS_SAN=mock-uss6.interuss.com
+      - MOCK_USS_AUTH_SPEC=DummyOAuth(http://oauth.authority.localutm:8085/token,${MOCK_USS_SAN})
       - MOCK_USS_DSS_URL=http://dss.uss1.localutm
       - MOCK_USS_PUBLIC_KEY=/var/test-certs/auth2.pem
       - MOCK_USS_TOKEN_AUDIENCE=scdsc.log.uss6.localutm,localhost,host.docker.internal

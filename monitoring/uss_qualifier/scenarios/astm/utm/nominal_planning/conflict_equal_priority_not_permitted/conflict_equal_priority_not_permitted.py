@@ -24,6 +24,7 @@ from monitoring.uss_qualifier.resources.flight_planning.flight_planners import (
 from monitoring.uss_qualifier.scenarios.astm.utm.test_steps import (
     validate_shared_operational_intent,
     ValidateNotSharedOperationalIntent,
+    validate_post_interactions,
 )
 from monitoring.uss_qualifier.scenarios.flight_planning.prioritization_test_steps import (
     modify_planned_conflict_flight_intent,
@@ -43,7 +44,12 @@ from monitoring.uss_qualifier.scenarios.flight_planning.test_steps import (
     activate_flight_intent,
     submit_flight_intent,
 )
-
+from monitoring.uss_qualifier.resources.interuss.mock_uss import (
+    MockUSSClient,
+    MockUSSResource,
+)
+from implicitdict import StringBasedDateTime
+from datetime import datetime
 
 class ConflictEqualPriorityNotPermitted(TestScenario):
     flight_1_id: Optional[str] = None
@@ -61,18 +67,21 @@ class ConflictEqualPriorityNotPermitted(TestScenario):
     tested_uss: FlightPlanner
     control_uss: FlightPlanner
     dss: DSSInstance
+    mock_uss: MockUSSClient
 
     def __init__(
         self,
         tested_uss: FlightPlannerResource,
         control_uss: FlightPlannerResource,
         dss: DSSInstanceResource,
+        mock_uss: MockUSSResource,
         flight_intents: Optional[FlightIntentsResource] = None,
     ):
         super().__init__()
         self.tested_uss = tested_uss.flight_planner
         self.control_uss = control_uss.flight_planner
         self.dss = dss.dss
+        self.mock_uss = mock_uss.mock_uss
 
         if not flight_intents:
             msg = f"No FlightIntentsResource was provided as input to this test, it is assumed that the jurisdiction of the tested USS ({self.tested_uss.config.participant_id}) does not allow any same priority conflicts, execution of the scenario was stopped without failure"
@@ -245,11 +254,14 @@ class ConflictEqualPriorityNotPermitted(TestScenario):
         return True
 
     def _attempt_plan_flight_conflict(self):
+
+        st = StringBasedDateTime(datetime.utcnow())
         _, self.flight_2_id = plan_flight_intent(
             self,
             "Plan flight 2",
             self.control_uss,
             self.flight_2_equal_prio_planned_time_range_B.request,
+            self.mock_uss,
         )
 
         resp_flight_2 = activate_flight_intent(
@@ -258,6 +270,7 @@ class ConflictEqualPriorityNotPermitted(TestScenario):
             self.control_uss,
             self.flight_2_equal_prio_activated_time_range_B.request,
             self.flight_2_id,
+            self.mock_uss,
         )
 
         validate_shared_operational_intent(
@@ -297,6 +310,7 @@ class ConflictEqualPriorityNotPermitted(TestScenario):
                 self.tested_uss,
                 self.flight_1_activated_time_range_B.request,
                 self.flight_1_id,
+                self.mock_uss,
             )
 
     def _attempt_modify_planned_flight_conflict(self):
@@ -305,6 +319,7 @@ class ConflictEqualPriorityNotPermitted(TestScenario):
             "Plan flight 1",
             self.tested_uss,
             self.flight_1_planned_time_range_A.request,
+            self.mock_uss,
         )
         validate_shared_operational_intent(
             self,
@@ -321,6 +336,7 @@ class ConflictEqualPriorityNotPermitted(TestScenario):
             self.tested_uss,
             self.flight_1_planned_time_range_B.request,
             self.flight_1_id,
+            self.mock_uss,
         )
 
         validate_shared_operational_intent(
@@ -340,6 +356,7 @@ class ConflictEqualPriorityNotPermitted(TestScenario):
             self.tested_uss,
             self.flight_1_activated_time_range_A.request,
             self.flight_1_id,
+            self.mock_uss,
         )
         validate_shared_operational_intent(
             self,
@@ -356,6 +373,7 @@ class ConflictEqualPriorityNotPermitted(TestScenario):
             self.tested_uss,
             self.flight_1_activated_time_range_B.request,
             self.flight_1_id,
+            self.mock_uss,
         )
 
         validate_shared_operational_intent(
@@ -379,6 +397,7 @@ class ConflictEqualPriorityNotPermitted(TestScenario):
             self.tested_uss,
             self.flight_1_activated_time_range_A.request,
             self.flight_1_id,
+            self.mock_uss,
         )
         validate_shared_operational_intent(
             self,
@@ -402,6 +421,7 @@ class ConflictEqualPriorityNotPermitted(TestScenario):
             self.control_uss,
             self.flight_2_equal_prio_nonconforming_time_range_A.request,
             self.flight_2_id,
+            self.mock_uss,
         )
         if resp_flight_2.result == InjectFlightResult.Rejected:
             msg = f"{self.control_uss.config.participant_id} rejected transition to a Nonconforming state because it does not support CMSA role, execution of the scenario was stopped without failure"
@@ -426,6 +446,7 @@ class ConflictEqualPriorityNotPermitted(TestScenario):
             self.tested_uss,
             self.flight_1_activated_time_range_A_extended.request,
             self.flight_1_id,
+            self.mock_uss,
         )
 
         if resp_flight_1.result == InjectFlightResult.ReadyToFly:

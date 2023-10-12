@@ -1,4 +1,5 @@
 import inspect
+import time
 from datetime import datetime
 from typing import List, Union, Optional, Tuple, Iterable, Set, Dict
 
@@ -22,6 +23,7 @@ from monitoring.uss_qualifier.resources.flight_planning.flight_planner import (
     FlightPlanner,
 )
 from monitoring.uss_qualifier.scenarios.scenario import TestScenarioType
+from monitoring.uss_qualifier.resources.interuss.mock_uss import MockUSSClient
 
 
 def clear_area(
@@ -236,6 +238,7 @@ def plan_flight_intent(
     test_step: str,
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> Tuple[InjectFlightResponse, Optional[str]]:
     """Plan a flight intent that should result in success.
 
@@ -258,6 +261,7 @@ def plan_flight_intent(
         {InjectFlightResult.Failed: "Failure"},
         flight_planner,
         flight_intent,
+        mock_uss=mock_uss,
     )
 
 
@@ -267,6 +271,7 @@ def activate_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: Optional[str] = None,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Activate a flight intent that should result in success.
 
@@ -288,6 +293,7 @@ def activate_flight_intent(
         flight_planner,
         flight_intent,
         flight_id,
+        mock_uss,
     )[0]
 
 
@@ -297,6 +303,7 @@ def modify_planned_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: str,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Modify a planned flight intent that should result in success.
 
@@ -318,6 +325,7 @@ def modify_planned_flight_intent(
         flight_planner,
         flight_intent,
         flight_id,
+        mock_uss,
     )[0]
 
 
@@ -327,6 +335,7 @@ def modify_activated_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: str,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> InjectFlightResponse:
     """Modify an activated flight intent that should result in success.
 
@@ -348,6 +357,7 @@ def modify_activated_flight_intent(
         flight_planner,
         flight_intent,
         flight_id,
+        mock_uss,
     )[0]
 
 
@@ -360,6 +370,7 @@ def submit_flight_intent(
     flight_planner: FlightPlanner,
     flight_intent: InjectFlightRequest,
     flight_id: Optional[str] = None,
+    mock_uss: Optional[MockUSSClient] = None,
 ) -> Tuple[InjectFlightResponse, Optional[str]]:
     """Submit a flight intent with an expected result.
     A check fail is considered of high severity and as such will raise an ScenarioCannotContinueError.
@@ -399,7 +410,12 @@ def submit_flight_intent(
                         details=f'{flight_planner.participant_id} indicated {resp.result} rather than the expected {" or ".join(expected_results)}{notes_suffix}',
                         query_timestamps=[query.request.timestamp],
                     )
-
+        if mock_uss is not None:
+            time.sleep(5)
+            scenario.record_interuss_interactions(
+                mock_uss.get_interactions(scenario._step_report.start_time),
+                exclude_sub=flight_planner.client.auth_adapter.get_sub()
+            )
         if resp.result in expected_results:
             scenario.end_test_step()
             return resp, flight_id

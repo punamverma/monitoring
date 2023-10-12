@@ -1,7 +1,9 @@
 import arrow
 
+from loguru import logger
 from implicitdict import ImplicitDict
 from monitoring.monitorlib import fetch
+from monitoring.monitorlib.fetch import QueryError, Query
 from monitoring.monitorlib.infrastructure import AuthAdapter, UTMClientSession
 from monitoring.monitorlib.scd_automated_testing.scd_injection_api import (
     SCOPE_SCD_QUALIFIER_INJECT,
@@ -9,6 +11,12 @@ from monitoring.monitorlib.scd_automated_testing.scd_injection_api import (
 from monitoring.uss_qualifier.reports.report import ParticipantID
 from monitoring.uss_qualifier.resources.communications import AuthAdapterResource
 from monitoring.uss_qualifier.resources.resource import Resource
+from monitoring.mock_uss.interaction_logging.interactions import (
+    Interaction,
+    ListLogsResponse,
+)
+from typing import Tuple, List
+from implicitdict import StringBasedDateTime
 
 
 class MockUSSClient(object):
@@ -20,6 +28,7 @@ class MockUSSClient(object):
         base_url: str,
         auth_adapter: AuthAdapter,
     ):
+        self.base_url = base_url
         self.session = UTMClientSession(base_url, auth_adapter)
         self.participant_id = participant_id
 
@@ -29,6 +38,28 @@ class MockUSSClient(object):
         )
 
     # TODO: Add other methods to interact with the mock USS in other ways (like starting/stopping message signing data collection)
+
+    def get_interactions(self, from_time: StringBasedDateTime) -> List[Interaction]:
+        url = "{}/mock_uss/interuss_logging/logs?from_time={}".format(self.base_url, from_time)
+        logger.debug(f"Getting interactions from {from_time} : {url}")
+        query = fetch.query_and_describe(
+            self.session, "GET", url, scope=SCOPE_SCD_QUALIFIER_INJECT
+        )
+        if query.status_code != 200:
+            raise QueryError(
+                f"Request to mock uss {url} returned a {query.status_code} ", [query]
+            )
+        try:
+            response = ImplicitDict.parse(query.response.get("json"), ListLogsResponse)
+        except KeyError:
+            raise QueryError(
+                msg=f"RecordedInteractionsResponse from mock_uss response did not contain JSON body", queries=[query]
+            )
+        except ValueError as e:
+            raise QueryError(
+                msg=f"RecordedInteractionsResponse from mock_uss response contained invalid JSON: {str(e)}", queries=[query]
+            )
+        return response.interactions
 
 
 class MockUSSSpecification(ImplicitDict):

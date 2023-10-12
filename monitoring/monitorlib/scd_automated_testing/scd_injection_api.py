@@ -2,7 +2,7 @@ from enum import Enum
 from uas_standards.ansi_cta_2063_a import SerialNumber
 from uas_standards.en4709_02 import OperatorRegistrationNumber
 from implicitdict import ImplicitDict, StringBasedDateTime
-from typing import List, Optional
+from typing import List, Optional, Dict
 from monitoring.monitorlib.scd import Volume4D
 
 SCOPE_SCD_QUALIFIER_INJECT = "utm.inject_test_data"
@@ -66,12 +66,20 @@ class FlightAuthorisationData(ImplicitDict):
 
 ### End of definitions around flight authorisation data
 
-
 class InjectFlightRequest(ImplicitDict):
     """A class to hold the details of a test injection payload"""
 
     operational_intent: OperationalIntentTestInjection
     flight_authorisation: FlightAuthorisationData
+
+
+class MockUssFlightBehavior(ImplicitDict):
+    modify_sharing_methods: List[str]
+    modify_fields: dict
+
+
+class MockUssInjectFlightRequest(InjectFlightRequest):
+    mock_uss_flight_behavior: Optional[MockUssFlightBehavior]
 
 
 class InjectFlightResult(str, Enum):

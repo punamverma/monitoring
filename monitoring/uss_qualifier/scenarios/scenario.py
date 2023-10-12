@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 import inspect
 from typing import Callable, Dict, List, Optional, TypeVar, Union, Set
-
+import jwt
 import arrow
 from implicitdict import StringBasedDateTime
 from loguru import logger
@@ -12,6 +12,7 @@ from loguru import logger
 from monitoring import uss_qualifier as uss_qualifier_module
 from monitoring.monitorlib import fetch, inspection
 from monitoring.monitorlib.inspection import fullname
+from monitoring.mock_uss.interaction_logging.interactions import Interaction
 from monitoring.uss_qualifier import scenarios as scenarios_module
 from monitoring.uss_qualifier.common_data_definitions import Severity
 from monitoring.uss_qualifier.reports.report import (
@@ -335,6 +336,34 @@ class GenericTestScenario(ABC):
         logger.debug(
             f"Queried {query.request['method']} {query.request['url']} -> {query.response.status_code}"
         )
+
+    def record_interuss_interactions(self, interactions: List[Interaction], exclude_sub: str) -> None:
+        def is_uss_interaction(interaction: Interaction) -> bool:
+            headers = interaction.query.request.headers
+            if "Authorization" in headers:
+                token = headers.get("Authorization").split(" ")[1]
+                payload = jwt.decode(token, algorithms="RS256", options={"verify_signature": False})
+                sub = payload["sub"]
+                logger.debug(f"sub of interuss_interaction token: {sub}")
+                if sub == exclude_sub:
+                    logger.debug(f"Excluding interaction with sub: {sub} ")
+                    return False
+                else:
+                    return True
+            else:
+                logger.error(f"Interaction received with out Authorization : {interaction}")
+                return False
+
+        self._expect_phase({ScenarioPhase.RunningTestStep, ScenarioPhase.CleaningUp})
+        if "interuss_interactions" not in self._step_report:
+            self._step_report.interuss_interactions = []
+        for interaction in interactions:
+            if is_uss_interaction(interaction):
+                self._step_report.interuss_interactions.append(interaction)
+                logger.debug(
+                    f"Interuss interaction reported : {interaction.query.request.method} {interaction.query.request.url} "
+                    f"with response {interaction.query.response.status_code}"
+                )
 
     def _get_check(self, name: str) -> TestCheckDocumentation:
         available_checks = {c.name: c for c in self._current_step.checks}

@@ -40,12 +40,17 @@ def scdsc_get_operational_intent_details(entityid: str):
 
 
 def op_intent_from_flightrecord(flight: FlightRecord) -> scd.OperationalIntent:
+    ref = flight.op_intent_reference
+    if flight.mod_op_intent_reference is not None:
+        ref = flight.mod_op_intent_reference
+    if flight.mod_op_intent_details is not None:
+        details = flight.mod_op_intent_details
     return scd.OperationalIntent(
-        reference=flight.op_intent_reference,
+        reference=ref,
         details=scd.OperationalIntentDetails(
-            volumes=flight.op_intent_injection.volumes,
-            off_nominal_volumes=flight.op_intent_injection.off_nominal_volumes,
-            priority=flight.op_intent_injection.priority,
+            volumes=details.volumes,
+            off_nominal_volumes=details.off_nominal_volumes,
+            priority=details.priority,
         ),
     )
 

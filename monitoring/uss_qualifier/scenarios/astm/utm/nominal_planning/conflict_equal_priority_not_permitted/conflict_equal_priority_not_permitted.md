@@ -50,6 +50,8 @@ CMSA role in order to transition some flight intents to the `Nonconforming` stat
 ### dss
 DSSInstanceResource that provides access to a DSS instance where flight creation/sharing can be verified.
 
+### mock_uss
+MockUSSResource
 
 ## Setup test case
 ### Check for necessary capabilities test step

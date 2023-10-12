@@ -19,6 +19,7 @@ from monitoring.uss_qualifier.reports.capability_definitions import (
 )
 from monitoring.uss_qualifier.requirements.definitions import RequirementID
 
+from monitoring.mock_uss.interaction_logging.interactions import Interaction
 
 class FailedCheck(ImplicitDict):
     name: str
@@ -81,6 +82,8 @@ class TestStepReport(ImplicitDict):
 
     passed_checks: List[PassedCheck]
     """The checks which successfully passed in this test step"""
+
+    interuss_interactions: Optional[List[Interaction]]
 
     end_time: Optional[StringBasedDateTime]
     """Time at which the test step completed or encountered an error"""

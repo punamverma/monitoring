@@ -1,0 +1,145 @@
+intents:
+  flight_1_planned_time_range_A:
+    full:
+      reference_time: '2023-01-01T00:00:00+00:00'
+      request:
+        operational_intent:
+          volumes:
+            - volume:
+                outline_polygon:
+                  vertices:
+                    - lat: 37.20642344604623
+                      lng: -80.58508994131496
+                    - lat: 37.21359527809636
+                      lng: -80.5767365824006
+                    - lat: 37.215812746083586
+                      lng: -80.58144645497978
+                    - lat: 37.2146332499489
+                      lng: -80.58408279875103
+                altitude_lower:
+                  value: 474
+                  reference: W84
+                  units: M
+                altitude_upper:
+                  value: 560
+                  reference: W84
+                  units: M
+              time_start:
+                value: '2023-01-01T00:03:00+00:00'
+                format: RFC3339
+              time_end:
+                value: '2023-01-01T00:08:00+00:00'
+                format: RFC3339
+          state: Accepted
+          off_nominal_volumes: [ ]
+          priority: 0
+        # TODO: Remove flight_authorisation section when it is optional
+        flight_authorisation:
+          uas_serial_number: 1AF49UL5CC5J6K
+          operation_category: Open
+          operation_mode: Bvlos
+          uas_class: C0
+          identification_technologies: [ 'N/A' ]
+          connectivity_methods: [ 'N/A' ]
+          endurance_minutes: 30
+          emergency_procedure_url: https://example.uav.com/emergency
+          operator_id: CHEo5kut30e0mt01-qwe
+          uas_id: ''
+          uas_type_certificate: ''
+
+  flight_1_activated_time_range_A:
+    delta:
+      source: flight_1_planned_time_range_A
+      mutation:
+        request:
+          operational_intent:
+            state: Activated
+
+  flight_1_planned_time_range_B:
+    delta:
+      source: flight_1_planned_time_range_A
+      mutation:
+        request:
+          operational_intent:
+            volumes:
+              - time_start:
+                  value: '2023-01-01T00:09:00+00:00'
+                  format: RFC3339
+                time_end:
+                  value: '2023-01-01T00:10:00+00:00'
+                  format: RFC3339
+
+  flight_2_planned_time_range_A:
+    full:
+      reference_time: '2023-01-01T00:00:00+00:00'
+      request:
+        operational_intent:
+          volumes:
+            - volume:
+                outline_polygon:
+                  vertices:
+                    - lat: 37.214119359044275
+                      lng: -80.58443600701524
+                    - lat: 37.212388260776436
+                      lng: -80.58824885811198
+                    - lat: 37.20211436858821
+                      lng: -80.5856832012991
+                    - lat: 37.21394908884487
+                      lng: -80.57474352572189
+                    - lat: 37.206173006943104
+                      lng: -80.5852199577081
+                altitude_lower:
+                  value: 483
+                  reference: W84
+                  units: M
+                altitude_upper:
+                  value: 519
+                  reference: W84
+                  units: M
+              time_start:
+                value: '2023-01-01T00:02:00+00:00'
+                format: RFC3339
+              time_end:
+                value: '2023-01-01T00:12:15+00:00'
+                format: RFC3339
+          state: Accepted
+          off_nominal_volumes: [ ]
+          priority: 0
+        # TODO: Remove flight_authorisation section when it is optional
+        flight_authorisation:
+          uas_serial_number: 1AF49UL5CC5J6K
+          operation_category: Open
+          operation_mode: Bvlos
+          uas_class: C0
+          identification_technologies: [ 'N/A' ]
+          connectivity_methods: [ 'N/A' ]
+          endurance_minutes: 30
+          emergency_procedure_url: https://example.uav.com/emergency
+          operator_id: CHEo5kut30e0mt01-qwe
+          uas_id: ''
+          uas_type_certificate: ''
+
+  flight_2_activated_time_range_A:
+    delta:
+      source: flight_2_planned_time_range_A
+      mutation:
+        request:
+          operational_intent:
+            state: Activated
+
+  flight_2_equal_prio_planned_time_range_B:
+    delta:
+      source: flight_2_planned_time_range_A
+      mutation:
+        request:
+          operational_intent:
+            state: Accepted
+            priority: 0
+            volumes:
+              - time_start:
+                  value: '2023-01-01T00:09:00+00:00'
+                  format: RFC3339
+                time_end:
+                  value: '2023-01-01T00:10:00+00:00'
+                  format: RFC3339
+

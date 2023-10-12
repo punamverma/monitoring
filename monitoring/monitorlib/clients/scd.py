@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple
 
-from monitoring.monitorlib import fetch, scd
+from monitoring.monitorlib import fetch, scd, schema_validation
 from monitoring.monitorlib.clients import call_query_hooks
 from monitoring.monitorlib.fetch import QueryError, Query, QueryType
 from monitoring.monitorlib.infrastructure import UTMClientSession
@@ -168,6 +168,15 @@ def get_operational_intent_details(
     except ValueError as e:
         raise QueryError(
             msg=f"{subject} response contained invalid JSON: {str(e)}", queries=[query]
+        )
+    errors = schema_validation.validate(
+        schema_validation.F3548_21.OpenAPIPath,
+        schema_validation.F3548_21.GetOperationalIntentDetailsResponse,
+        resp_body,
+    )
+    if errors:
+        raise QueryError(
+            msg=f"{subject} response failed schema validation as per UTM Spec API", queries=[query]
         )
     return resp_body.operational_intent, query
 
