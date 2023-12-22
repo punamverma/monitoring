@@ -106,7 +106,7 @@ class OpIntentValidator(object):
             len(oi_ids_delta) > 1
         ):  # TODO: could a USS cut up a submitted flight intent into several op intents?
             raise TestRunCannotContinueError(
-                f"unexpectedly got more than 1 new operational intent after planning request was created (IDs: {oi_ids_delta}): the test scenario might be malformed or some external requests might have interfered"
+                f"unexpectedly got more than 1 new operational intent reference after planning request was created (IDs: {oi_ids_delta}): the test scenario might be malformed or some external requests might have interfered"
             )
         if len(oi_ids_delta) == 1:
             self._new_oi_ref = self._find_after_oi(oi_ids_delta.pop())
@@ -118,14 +118,14 @@ class OpIntentValidator(object):
         with self._scenario.check("DSS responses", [self._dss.participant_id]) as check:
             if self._before_query.status_code != 200:
                 check.record_failed(
-                    summary="Failed to query DSS for operational intents before planning request",
+                    summary="Failed to query DSS for operational intent references before planning request",
                     severity=Severity.High,
                     details=f"Received status code {self._before_query.status_code} from the DSS",
                     query_timestamps=[self._before_query.request.timestamp],
                 )
             if self._after_query.status_code != 200:
                 check.record_failed(
-                    summary="Failed to query DSS for operational intents after planning request",
+                    summary="Failed to query DSS for operational intent references after planning request",
                     severity=Severity.High,
                     details=f"Received status code {self._after_query.status_code} from the DSS",
                     query_timestamps=[self._after_query.request.timestamp],
@@ -273,7 +273,7 @@ class OpIntentValidator(object):
         self,
         flight_intent: Union[InjectFlightRequest, FlightInfo],
         validation_failure_type: OpIntentValidationFailureType,
-        invalid_fields: Optional[List],
+        invalid_fields: Optional[List] = None,
         skip_if_not_found: bool = False,
     ) -> Optional[OperationalIntentReference]:
         """Validate that operational intent information was shared with dss,
@@ -500,7 +500,7 @@ class OpIntentValidator(object):
         self,
         validation_failures: Set[OpIntentValidationFailure],
         expected_validation_type: OpIntentValidationFailureType,
-        expected_invalid_fields: Optional[List[str]],
+        expected_invalid_fields: Optional[List[str]] = None,
     ) -> OpIntentValidationFailure:
         """
         Checks if expected validation type is in validation failures
