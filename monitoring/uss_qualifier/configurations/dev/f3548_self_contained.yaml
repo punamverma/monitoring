@@ -25,7 +25,7 @@ v1:
           second_utm_auth: second_utm_auth
           planning_area: planning_area
           problematically_big_area: problematically_big_area
-          system_identity: system_identity
+
     # This block defines all the resources available in the resource pool.
     # Presumably all resources defined below would be used either
     #   1) directly in the test suite or
@@ -218,10 +218,6 @@ v1:
             participant_id: mock_uss
             mock_uss_base_url: http://scdsc.log.uss6.localutm
 
-        system_identity:
-          resource_type: resources.versioning.SystemIdentityResource
-          specification:
-            system_identity: astm.f3548.v2
 
     # When a test run is executed, a "baseline signature" is computed uniquely identifying the "baseline" of the test,
     # usually excluding exactly what systems are participating in the test (the "environment").  This is a list of
