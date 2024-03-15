@@ -51,4 +51,4 @@ for log_folder in "${log_folders[@]}"; do
 done
 
 # shellcheck disable=SC2086
-docker compose -f docker-compose.yaml -p mocks $DC_COMMAND $DC_OPTIONS
+docker compose -f ${COMPOSE_FILE:-docker-compose.yaml} -p mocks $DC_COMMAND $DC_OPTIONS
