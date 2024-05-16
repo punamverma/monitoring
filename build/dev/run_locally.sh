@@ -32,5 +32,13 @@ elif [[ "$DC_COMMAND" == "debug" ]]; then
   export DEBUG_ON=1
 fi
 
+AUD_ENV=""
+
+if [[ "$AUD" ]]; then
+  AUD_ENV="AUD=$AUD"
+fi
+
+echo $AUD_ENV
+
 # shellcheck disable=SC2086
-docker compose -f docker-compose.yaml -p local_infra $DC_COMMAND $DC_OPTIONS
+$AUD_ENV docker compose -f docker-compose.yaml -p local_infra $DC_COMMAND $DC_OPTIONS

@@ -44,6 +44,8 @@ services:
   dss:
     hostname: dss.uss1.localutm
     image: interuss/dss:v0.11.0-rc1
+    environment:
+      - AUD=${AUD}
     volumes:
       - $PWD/../test-certs:/var/test-certs:ro
       - dss_component_coordination:/var/dss_component_coordination
