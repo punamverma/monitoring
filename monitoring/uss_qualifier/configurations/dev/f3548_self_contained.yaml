@@ -88,7 +88,7 @@ v1:
             instances:
               - participant_id: uss1_core
                 interuss:
-                  base_url: http://scdsc.uss1.localutm/versioning
+                  base_url: http://host.docker.internal:10230/ussq/v1
               - participant_id: uss2_core
                 interuss:
                   base_url: http://scdsc.uss2.localutm/versioning
@@ -102,7 +102,7 @@ v1:
             instances:
               - participant_id: uss1_core
                 interuss:
-                  base_url: http://scdsc.uss1.localutm/versioning
+                  base_url: http://host.docker.internal:10230/ussq/v1
               - participant_id: uss2_core
                 interuss:
                   base_url: http://scdsc.uss2.localutm/versioning
@@ -116,7 +116,7 @@ v1:
             flight_planners:
               # uss1 is the mock_uss directly exposing flight planning functionality
               - participant_id: uss1_core
-                v1_base_url: http://scdsc.uss1.localutm/flight_planning/v1
+                v1_base_url: http://host.docker.internal:10230/ussq/v1
               # uss2 is another mock_uss directly exposing flight planning functionality
               - participant_id: uss2_core
                 v1_base_url: http://scdsc.uss2.localutm/flight_planning/v1
