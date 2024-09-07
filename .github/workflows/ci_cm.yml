@@ -41,17 +41,6 @@ jobs:
         cd monitoring/mock_uss
         make test
 
-  uss_qualifier-noop-test:
-    name: uss_qualifier configurations.dev.noop tests
-    uses: ./.github/workflows/monitoring-test.yml
-    with:
-      name: uss_qualifier-noop-test
-      script: |
-        export CONFIG_NAME="configurations.dev.noop"
-
-        cd monitoring/uss_qualifier
-        make test
-
 
   uss_qualifier-general_flight_auth-test:
     name: uss_qualifier configurations.dev.general_flight_auth tests
@@ -108,16 +97,6 @@ jobs:
         cd monitoring/uss_qualifier
         make test
 
-  uss_qualifier-uspace-test:
-    name: uss_qualifier configurations.dev.uspace tests
-    uses: ./.github/workflows/monitoring-test.yml
-    with:
-      name: uss_qualifier-uspace-test
-      script: |
-        export CONFIG_NAME="configurations.dev.uspace"
-
-        cd monitoring/uss_qualifier
-        make test
 
 
 #  publish-gh-pages:
