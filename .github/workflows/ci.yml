@@ -1,9 +1,11 @@
-name: Continuous integration
+name: Continuous integration - cm
 on:
-  pull_request: # All
+  pull_request:
+    branches:
+    - cm
   push:
     branches:
-    - main
+    - cm
 jobs:
   hygiene-tests:
     name: Repository hygiene
@@ -180,52 +182,52 @@ jobs:
         cd monitoring/prober
         make test
 
-  publish-gh-pages:
-    name: Publish GitHub Pages
-    needs:
-      - hygiene-tests
-      - mock_uss-test
-      - uss_qualifier-noop-test
-      - uss_qualifier-geoawareness_cis-test
-      - uss_qualifier-generate_rid_test_data-test
-      - uss_qualifier-geospatial_comprehension-test
-      - uss_qualifier-general_flight_auth-test
-      - uss_qualifier-message_signing-test
-      - uss_qualifier-dss_probing-test
-      - uss_qualifier-f3548_self_contained-test
-      - uss_qualifier-utm_implementation_us-test
-      - uss_qualifier-netrid_v22a-test
-      - uss_qualifier-netrid_v19-test
-      - uss_qualifier-uspace-test
-      - prober-test
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-          path: monitoring
-
-      - name: Get uss_qualifier reports
-        uses: actions/download-artifact@v4
-        with:
-          path: ./artifacts
-
-      - name: Make site content
-        run: ./monitoring/github_pages/make_site_content.sh
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          enable_jekyll: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: ${{ github.event.head_commit.message }}
+#  publish-gh-pages:
+#    name: Publish GitHub Pages
+#    needs:
+#      - hygiene-tests
+#      - mock_uss-test
+#      - uss_qualifier-noop-test
+#      - uss_qualifier-geoawareness_cis-test
+#      - uss_qualifier-generate_rid_test_data-test
+#      - uss_qualifier-geospatial_comprehension-test
+#      - uss_qualifier-general_flight_auth-test
+#      - uss_qualifier-message_signing-test
+#      - uss_qualifier-dss_probing-test
+#      - uss_qualifier-f3548_self_contained-test
+#      - uss_qualifier-utm_implementation_us-test
+#      - uss_qualifier-netrid_v22a-test
+#      - uss_qualifier-netrid_v19-test
+#      - uss_qualifier-uspace-test
+#      - prober-test
+#    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
+#    concurrency:
+#      group: ${{ github.workflow }}-${{ github.ref }}
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#        with:
+#          submodules: true
+#          path: monitoring
+#
+#      - name: Get uss_qualifier reports
+#        uses: actions/download-artifact@v4
+#        with:
+#          path: ./artifacts
+#
+#      - name: Make site content
+#        run: ./monitoring/github_pages/make_site_content.sh
+#
+#      - name: Deploy
+#        uses: peaceiris/actions-gh-pages@v3
+#        if: github.ref == 'refs/heads/main'
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          publish_dir: ./public
+#          enable_jekyll: true
+#          user_name: 'github-actions[bot]'
+#          user_email: 'github-actions[bot]@users.noreply.github.com'
+#          commit_message: ${{ github.event.head_commit.message }}
