@@ -264,7 +264,7 @@ v1:
     execution:
       # Since we expect no failed checks and want to stop execution immediately if there are any failed checks, we set
       # this parameter to true.
-      stop_fast: true
+      stop_fast: false
 
   # This block defines artifacts related to the test run.  Note that all paths are
   # relative to where uss_qualifier is executed from, and are located inside the
