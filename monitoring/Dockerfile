@@ -13,7 +13,7 @@ FROM python:3.12-slim
 # Not -alpine because: https://stackoverflow.com/a/58028091/651139
 
 RUN apt-get update && apt-get install -y openssl curl libgeos-dev gcc && apt-get install ca-certificates
-
+RUN pip install --no-cache-dir setuptools==74.1.2
 # required for gevent to build without error in an ARM environment
 RUN apt-get update && apt-get install -y libffi-dev libssl-dev python3-dev build-essential
 
